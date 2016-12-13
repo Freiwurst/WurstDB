@@ -1,0 +1,14 @@
+CREATE TABLE `wurst` (
+	`ID`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	`code`	TEXT NOT NULL,
+	`valid`	INTEGER NOT NULL,
+	`used`	INTEGER NOT NULL,
+	`dateGenerated`	INTEGER NOT NULL,
+	`dateUsed`	INTEGER,
+	`pubMethod`	TEXT NOT NULL
+);
+CREATE TABLE `pubMethod` (
+	`pubMethod`	TEXT NOT NULL PRIMARY KEY,
+	`valid`	INTEGER NOT NULL DEFAULT 1
+);
+CREATE UNIQUE INDEX `codeI` ON `wurst` (`code` DESC);
