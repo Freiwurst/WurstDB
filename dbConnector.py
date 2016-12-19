@@ -15,35 +15,24 @@ class InvalidPubMethodError(Exception):
     def __init__(self, message):
         self.message = message
 class DbConnector(object):
-    conn = False
-    dbFile = None
-    _instances = []
     def __init__(self,dbFile):
+        self.conn = False
+        self.dbFile = None
         db_filename = dbFile 
         schema_filename = 'wurstDB.sql'
-        if not DbConnector.conn and DbConnector.dbFile == None:
-            db_is_new = not os.path.exists(db_filename)
-            with sqlite3.connect(db_filename) as DbConnector.conn:
-                if db_is_new:
-                    with open(schema_filename, 'rt') as f:
-                        schema = f.read()
-                        DbConnector.conn.executescript(schema)
-                        DbConnector.conn.commit()
-            self.conn = DbConnector.conn
-            DbConnector.dbFile = dbFile
-        elif DbConnector.dbFile != dbFile:
-           raise WrongDbFileError("%s is not the DB, we use %s"%(dbFile,DbConnector.dbFile))
-        else:
-            self.conn = DbConnector.conn
-        DbConnector._instances.append(self)
+        db_is_new = not os.path.exists(db_filename)
+        with sqlite3.connect(db_filename) as self.conn:
+            if db_is_new:
+                with open(schema_filename, 'rt') as f:
+                    schema = f.read()
+                    self.conn.executescript(schema)
+                    self.conn.commit()
+        self.dbFile = dbFile
     def close(self):
-        if DbConnector.conn:
-            DbConnector.conn.close() 
-            DbConnector.conn = False
-            DbConnector.dbFile = None
-            for i in DbConnector._instances:
-                if i is not None:
-                    i.conn = False
+        if self.conn:
+            self.conn.close() 
+            self.conn = False
+            self.dbFile = None
 
     def getCode(self,volume,pubMethod):
         dateCreate = int(time.time())
@@ -93,19 +82,13 @@ class TestDbConnector(unittest.TestCase):
 
     def test_init(self): 
         db1 = DbConnector(self.dbFileName)
-        db2 = DbConnector(self.dbFileName)
-        self.assertEqual(db1.conn , db2.conn, 'DB connection is initilized twice')
-        with self.assertRaises(WrongDbFileError) as e:
-            db3 = DbConnector("/tmp/"+str(uuid.uuid4()))
+        self.assertIsNotNone(DbConnector(self.dbFileName), 'DB connection failed')
         db1.close()
-        db2.close()
 
     def test_close(self): 
-        db1 = DbConnector(self.dbFileName)
         db2 = DbConnector(self.dbFileName)
         db2.close()
-        self.assertEqual(db1.conn , False, 'DB connection is not closed for all dbs')
-        db1.close()
+        self.assertEqual(db2.conn , False, 'DB connection is not closed')
             
     def test_getCode(self):
         db1 = DbConnector(self.dbFileName)
