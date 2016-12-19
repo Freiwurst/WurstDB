@@ -71,9 +71,13 @@ class DbConnector(object):
         
     def blackList(self,pubMethod):
         c = self.conn.cursor()
-        c.execute("UPDATE pubMethod SET valid = 0 WHERE pubMethod == ?",[str(pubMethod)])
+        c.execute("UPDATE OR IGNORE pubMethod SET valid = 0 WHERE pubMethod == ?",[str(pubMethod)])
         self.conn.commit()
         
+    def enablePubMethod(self,pubMethod):
+        c = self.conn.cursor()
+        c.execute("UPDATE OR IGNORE pubMethod SET valid = 1 WHERE pubMethod == ?",[str(pubMethod)])
+        self.conn.commit()
         
 
 class TestDbConnector(unittest.TestCase):
