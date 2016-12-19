@@ -1,0 +1,4 @@
+flask
+json
+sqlite3
+requests
