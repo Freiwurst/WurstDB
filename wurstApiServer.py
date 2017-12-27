@@ -4,6 +4,18 @@ from dbConnector import DbConnector, InvalidPubMethodError
 import json
 api = Flask(__name__)
 
+@api.route('/ean', methods=['PUT'])
+def getEan():
+    dbConn = DbConnector('wurst.db')
+    attr = json.loads(request.data.decode())
+    try:
+        ean = dbConn.getEan(attr['volume'],attr['method'])
+        ret = {'ean':ean}
+    except InvalidPubMethodError as e:
+        ret = {'error':e.message}
+    dbConn.close()
+    return json.dumps(ret)
+
 @api.route('/code', methods=['PUT'])
 def getCode():
     dbConn = DbConnector('wurst.db')
@@ -23,6 +35,20 @@ def useCode(code):
     dbConn.close()
     return json.dumps({'valid':valid})
 
+@api.route('/check/<code>', methods=['GET'])
+def checkCode(code):
+    dbConn = DbConnector('wurst.db')
+    valid = dbConn.checkCode(code)
+    dbConn.close()
+    return json.dumps({'valid':valid})
+
+@api.route('/stats/open', methods=['GET'])
+def statsOpen(code):
+    dbConn = DbConnector('wurst.db')
+    opens = dbConn.getStatOpen()
+    dbConn.close()
+    return json.dumps({'open':opens})
+
 @api.route('/method/<method>', methods=['post','put','delete'])
 def methodStuff(method):
     dbConn = DbConnector('wurst.db')
@@ -40,4 +66,4 @@ def methodStuff(method):
 
 
 if __name__ == '__main__':
-    api.run(debug=False)
+    api.run(host='0.0.0.0', port=5000,debug=False)
