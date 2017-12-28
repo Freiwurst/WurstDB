@@ -51,6 +51,9 @@ class DbConnector(object):
         if not valid:
             raise InvalidPubMethodError("%s is not a valid PubMethod"%pubMethod) 
         c.execute("INSERT INTO wurst(code, valid, used, dateGenerated, pubMethod) VALUES (?,?,?,?,?)",[str(code),volume,0,dateCreate,str(pubMethod)])
+        self.conn.commit()
+        return code
+
     def getEan(self,volume,pubMethod):
         dateCreate = int(time.time())
         c = self.conn.cursor()
