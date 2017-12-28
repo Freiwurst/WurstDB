@@ -8,6 +8,7 @@ import unittest
 import weakref
 import os
 import uuid
+import sys
 class WrongDbFileError(Exception):
     def __init__(self, message):
         self.message = message
@@ -28,6 +29,7 @@ class DbConnector(object):
                     self.conn.executescript(schema)
                     self.conn.commit()
         self.dbFile = dbFile
+        self.logfile = open('/tmp/test.log','w')
     def close(self):
         if self.conn:
             self.conn.close() 
@@ -78,6 +80,17 @@ class DbConnector(object):
         c = self.conn.cursor()
         c.execute("UPDATE OR IGNORE pubMethod SET valid = 1 WHERE pubMethod == ?",[str(pubMethod)])
         self.conn.commit()
+    def getStatOpen(self):
+        print("request",file=self.logfile)
+        self.logfile.flush()
+        c = self.conn.cursor()
+        c.execute("SELECT `dateGenerated`, `valid` FROM `wurst` where `dateGenerated`>1504375200;")
+        codes= c.fetchall()
+        c.execute("SELECT `dateGenerated`, `used` FROM `wurst` where `dateGenerated`>1504375200 and `used`!=0;")
+        used = c.fetchall()
+        return({'generated':codes, 'used':used})
+        
+        
         
 
 class TestDbConnector(unittest.TestCase):
