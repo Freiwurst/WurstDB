@@ -51,6 +51,19 @@ class DbConnector(object):
         if not valid:
             raise InvalidPubMethodError("%s is not a valid PubMethod"%pubMethod) 
         c.execute("INSERT INTO wurst(code, valid, used, dateGenerated, pubMethod) VALUES (?,?,?,?,?)",[str(code),volume,0,dateCreate,str(pubMethod)])
+    def getEan(self,volume,pubMethod):
+        dateCreate = int(time.time())
+        c = self.conn.cursor()
+        code= str("%011d"%int(random.random()*10e10))
+        c.execute("SELECT valid FROM pubMethod WHERE pubMethod = ?",[str(pubMethod)])
+        valid = False
+        for val in c.fetchall():
+            val, = val
+            if val == 1:
+                valid = True
+        if not valid:
+            raise InvalidPubMethodError("%s is not a valid PubMethod"%pubMethod) 
+        c.execute("INSERT INTO wurst(code, valid, used, dateGenerated, pubMethod) VALUES (?,?,?,?,?)",[str(code),volume,0,dateCreate,str(pubMethod)])
         self.conn.commit()
         return code
 
