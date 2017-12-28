@@ -85,16 +85,16 @@ def statsGraphs():
     output_file(os.path.join(root_dir, 'tmp',"lines.html"))
 
     # create a new plot with a title and axis labels
-    p = figure(title="simple line example", x_axis_label='Date', y_axis_label='',x_axis_type="datetime",plot_width=1000, plot_height=600)
+    p = figure(title="Wurst Down Chart", x_axis_label='Date', y_axis_label='',x_axis_type="datetime",plot_width=1000, plot_height=600)
     
     p.yaxis.major_tick_line_color = None  # turn off y-axis major ticks
     p.yaxis.minor_tick_line_color = None  # turn off y-axis minor ticks
     p.yaxis.visible = False
 
     # add a line renderer with legend and line thickness
-    p.line(usedDate, usedNum, legend="used", line_width=2,color='#be1e3c')
-    p.line(genDate, genNum, legend="generated", line_width=2,color='#66b4d3')
-    p.line(usedDate, list(600 - np.asarray(usedNum)), legend="wurstdown", line_width=2,color='#e16d00')
+    p.line(usedDate, usedNum, legend="used Wurstchers", line_width=2,color='#be1e3c')
+    p.line(genDate, genNum, legend="generated Wurstchers", line_width=2,color='#66b4d3')
+    p.line(usedDate, list(600 - np.asarray(usedNum)), legend="Wurst Reserve", line_width=2,color='#e16d00')
     p.legend.location = "top_left"
 
     # show the results
